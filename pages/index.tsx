@@ -9,8 +9,6 @@ interface IProps {
 }
 
 const Home = ({ videos }: IProps) => {
-	console.log(videos);
-
 	return (
 		<div className="flwx flex-col gap-10 videos h-full">
 			{videos.length ? (

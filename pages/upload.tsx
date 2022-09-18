@@ -17,6 +17,14 @@ const Upload = () => {
 		SanityAssetDocument | undefined
 	>();
 	const [wrongFileType, setWrongFileType] = useState(false);
+	const [caption, setCaption] = useState("");
+	const [category, setCategory] = useState(topics[0].name);
+	const [first, setFirst] = useState(false);
+	const [savingPost, setSavingPost] = useState<Boolean>(false);
+
+	const { userProfile }: { userProfile: any } = useAuthStore();
+
+	const router = useRouter();
 
 	const uploadVideo = async (e: any) => {
 		const selectedFile = e.target.files[0];
@@ -36,6 +44,34 @@ const Upload = () => {
 			setLoading(false);
 			setWrongFileType(true);
 		}
+	};
+
+	const handlePost = async () => {
+		if (caption && videoAsset?._id && category) {
+			setSavingPost(true);
+
+			const document = {
+				_type: "post",
+				caption,
+				video: {
+					_type: "file",
+					asset: {
+						_type: "reference",
+						_ref: videoAsset?._id,
+					},
+				},
+				userId: userProfile?._id,
+				postedBy: {
+					_type: "postedBy",
+					_ref: userProfile?._id,
+				},
+				topic: category,
+			};
+
+			await axios.post("http://localhost:3000/api/post", document);
+		}
+
+		router.push("/");
 	};
 
 	return (
@@ -61,7 +97,7 @@ const Upload = () => {
 											src={videoAsset.url}
 											loop
 											controls
-											className="rounded-xl h-[450px]  bg-black"
+											className="rounded-xl h-[375px]  bg-black"
 										></video>
 									</div>
 								) : (
@@ -104,13 +140,15 @@ const Upload = () => {
 					<label className="text-md font-medium">Caption</label>
 					<input
 						type="text"
-						value=""
-						onChange={() => {}}
+						value={caption}
+						onChange={(e) => {
+							setCaption(e.target.value);
+						}}
 						className="rounded outline-none text-md border-2 border-gray-200 p-2"
 					/>
-					<label className="text-md font-medium">Choose a category</label>
+					<label className="text-md font-medium">Choose a Category</label>
 					<select
-						onChange={() => {}}
+						onChange={(e) => setCategory(e.target.value)}
 						className="outline-none border-2 border-gray-200 text-md capitalize lg:p-4 p2 rounded cursor-pointer"
 					>
 						{topics.map((topic) => (
@@ -132,7 +170,7 @@ const Upload = () => {
 							Discard
 						</button>
 						<button
-							onClick={() => {}}
+							onClick={handlePost}
 							type="button"
 							className="bg-[#F51997] text-white text-md font-medium p-2 rounded w-28 lg:w-44 outline-none"
 						>

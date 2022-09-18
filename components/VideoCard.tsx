@@ -14,8 +14,6 @@ interface IProps {
 }
 
 const VideoCard: NextPage<IProps> = ({ post }) => {
-	console.log(post.caption);
-
 	const [isHover, setIsHover] = useState(false);
 	const [playing, setPlaying] = useState(false);
 	const [isVideoMuted, setIsVideoMuted] = useState(false);
